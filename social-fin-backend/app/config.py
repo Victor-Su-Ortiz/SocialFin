@@ -1,9 +1,8 @@
 # app/config.py
-from pydantic_settings import BaseSettings
-from typing import Optional
 from functools import lru_cache
-import os
+from typing import Optional
 from pathlib import Path
+from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
 
 # Get the project root directory
@@ -14,6 +13,8 @@ load_dotenv(BASE_DIR / ".env")
 
 
 class Settings(BaseSettings):
+    """Application settings using Pydantic for validation and management"""
+
     # App Settings
     app_name: str = "SocialFin API"
     app_version: str = "1.0.0"
@@ -58,10 +59,9 @@ class Settings(BaseSettings):
 # Create a cached instance
 @lru_cache()
 def get_settings():
+    """Get settings instance with caching"""
     return Settings()
 
 
 # Create a global instance
 settings = get_settings()
-
-print(settings.supabase_anon_key)  # Example usage to verify settings are loaded
