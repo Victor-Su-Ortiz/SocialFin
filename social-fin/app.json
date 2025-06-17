@@ -9,8 +9,7 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true,
-      "backgroundColor": "#1E1B4B",
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {

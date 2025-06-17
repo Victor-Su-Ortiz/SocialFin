@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
@@ -6,27 +5,21 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  SafeAreaView,
   KeyboardAvoidingView,
   Platform,
   Animated,
   ActivityIndicator,
   Alert,
-  ScrollView,
-  StatusBar,
-  Dimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 interface AuthScreenProps {
   onAuthSuccess?: (user: { email: string; id: string }) => void;
 }
 
 const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
-  const insets = useSafeAreaInsets();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -41,13 +34,6 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    // Set the status bar style
-    StatusBar.setBarStyle('light-content');
-    if (Platform.OS === 'android') {
-      StatusBar.setBackgroundColor('#1E1B4B');
-      StatusBar.setTranslucent(true);
-    }
-
     // Pulse animation for the logo
     Animated.loop(
       Animated.sequence([
@@ -183,186 +169,172 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
   return (
     <LinearGradient
       colors={['#1E1B4B', '#312E81', '#1E1B4B']}
-      style={styles.gradient}
+      style={styles.container}
     >
-      <StatusBar 
-        barStyle="light-content" 
-        backgroundColor="transparent"
-        translucent
-      />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}
-        keyboardVerticalOffset={0}
-      >
-        <ScrollView
-          contentContainerStyle={[
-            styles.scrollContent,
-            {
-              paddingTop: insets.top + 20,
-              paddingBottom: insets.bottom + 20,
-            }
-          ]}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-          bounces={false}
+      <SafeAreaView style={styles.safeArea}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.keyboardView}
         >
-          {/* Logo Section */}
-          <Animated.View
-            style={[
-              styles.logoContainer,
-              { transform: [{ scale: pulseAnim }] },
-            ]}
-          >
-            <LinearGradient
-              colors={['#6366F1', '#8B5CF6', '#EC4899']}
-              style={styles.logoGradient}
-            >
-              <Ionicons name="wallet" size={40} color="white" />
-            </LinearGradient>
-            <Text style={styles.logoText}>SocialFin</Text>
-            <Text style={styles.tagline}>Your Money is Social</Text>
-          </Animated.View>
-
-          {/* Form Section */}
-          <Animated.View
-            style={[
-              styles.formContainer,
-              {
-                opacity: fadeAnim,
-                transform: [{ translateX: slideAnim }],
-              },
-            ]}
-          >
-            <Text style={styles.title}>
-              {isLogin ? 'Welcome Back' : 'Create Account'}
-            </Text>
-            <Text style={styles.subtitle}>
-              {isLogin
-                ? 'Track shared expenses with ease'
-                : 'Join thousands managing money together'}
-            </Text>
-
-            {!isLogin &&
-              renderInput(
-                'First Name',
-                firstName,
-                setFirstName,
-                'person',
-                false,
-                errors.firstName
-              )}
-
-            {renderInput(
-              'Email',
-              email,
-              setEmail,
-              'mail',
-              false,
-              errors.email
-            )}
-
-            {renderInput(
-              'Password',
-              password,
-              setPassword,
-              'lock-closed',
-              !showPassword,
-              errors.password
-            )}
-
-            {/* Auth Button */}
-            <TouchableOpacity
-              style={styles.authButton}
-              onPress={handleAuth}
-              disabled={loading}
+          <View style={styles.content}>
+            {/* Logo Section */}
+            <Animated.View
+              style={[
+                styles.logoContainer,
+                { transform: [{ scale: pulseAnim }] },
+              ]}
             >
               <LinearGradient
-                colors={['#6366F1', '#8B5CF6']}
-                style={styles.authButtonGradient}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
+                colors={['#6366F1', '#8B5CF6', '#EC4899']}
+                style={styles.logoGradient}
               >
-                {loading ? (
-                  <ActivityIndicator color="white" />
-                ) : (
-                  <>
-                    <Text style={styles.authButtonText}>
-                      {isLogin ? 'Sign In' : 'Create Account'}
-                    </Text>
-                    <Ionicons name="arrow-forward" size={20} color="white" />
-                  </>
-                )}
+                <Ionicons name="wallet" size={40} color="white" />
               </LinearGradient>
-            </TouchableOpacity>
+              <Text style={styles.logoText}>SocialFin</Text>
+              <Text style={styles.tagline}>Your Money is Social</Text>
+            </Animated.View>
 
-            {/* Social Login */}
-            <View style={styles.dividerContainer}>
-              <View style={styles.divider} />
-              <Text style={styles.dividerText}>or continue with</Text>
-              <View style={styles.divider} />
-            </View>
-
-            <View style={styles.socialContainer}>
-              <TouchableOpacity style={styles.socialButton}>
-                <Ionicons name="logo-google" size={24} color="#DB4437" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.socialButton}>
-                <Ionicons name="logo-apple" size={24} color="white" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.socialButton}>
-                <Ionicons name="logo-facebook" size={24} color="#1877F2" />
-              </TouchableOpacity>
-            </View>
-
-            {/* Toggle Auth Mode */}
-            <TouchableOpacity
-              style={styles.toggleContainer}
-              onPress={toggleAuthMode}
+            {/* Form Section */}
+            <Animated.View
+              style={[
+                styles.formContainer,
+                {
+                  opacity: fadeAnim,
+                  transform: [{ translateX: slideAnim }],
+                },
+              ]}
             >
-              <Text style={styles.toggleText}>
-                {isLogin ? "Don't have an account? " : 'Already have an account? '}
-                <Text style={styles.toggleLink}>
-                  {isLogin ? 'Sign Up' : 'Sign In'}
-                </Text>
+              <Text style={styles.title}>
+                {isLogin ? 'Welcome Back' : 'Create Account'}
               </Text>
-            </TouchableOpacity>
-          </Animated.View>
+              <Text style={styles.subtitle}>
+                {isLogin
+                  ? 'Track shared expenses with ease'
+                  : 'Join thousands managing money together'}
+              </Text>
 
-          {/* Features */}
-          <View style={styles.featuresContainer}>
-            <View style={styles.featureItem}>
-              <Ionicons name="people" size={20} color="#8B5CF6" />
-              <Text style={styles.featureText}>Split expenses</Text>
-            </View>
-            <View style={styles.featureItem}>
-              <Ionicons name="sync" size={20} color="#8B5CF6" />
-              <Text style={styles.featureText}>Track debts</Text>
-            </View>
-            <View style={styles.featureItem}>
-              <Ionicons name="shield-checkmark" size={20} color="#8B5CF6" />
-              <Text style={styles.featureText}>Bank-level security</Text>
+              {!isLogin &&
+                renderInput(
+                  'First Name',
+                  firstName,
+                  setFirstName,
+                  'person',
+                  false,
+                  errors.firstName
+                )}
+
+              {renderInput(
+                'Email',
+                email,
+                setEmail,
+                'mail',
+                false,
+                errors.email
+              )}
+
+              {renderInput(
+                'Password',
+                password,
+                setPassword,
+                'lock-closed',
+                !showPassword,
+                errors.password
+              )}
+
+              {/* Auth Button */}
+              <TouchableOpacity
+                style={styles.authButton}
+                onPress={handleAuth}
+                disabled={loading}
+              >
+                <LinearGradient
+                  colors={['#6366F1', '#8B5CF6']}
+                  style={styles.authButtonGradient}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                >
+                  {loading ? (
+                    <ActivityIndicator color="white" />
+                  ) : (
+                    <>
+                      <Text style={styles.authButtonText}>
+                        {isLogin ? 'Sign In' : 'Create Account'}
+                      </Text>
+                      <Ionicons name="arrow-forward" size={20} color="white" />
+                    </>
+                  )}
+                </LinearGradient>
+              </TouchableOpacity>
+
+              {/* Social Login */}
+              <View style={styles.dividerContainer}>
+                <View style={styles.divider} />
+                <Text style={styles.dividerText}>or continue with</Text>
+                <View style={styles.divider} />
+              </View>
+
+              <View style={styles.socialContainer}>
+                <TouchableOpacity style={styles.socialButton}>
+                  <Ionicons name="logo-google" size={24} color="#DB4437" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.socialButton}>
+                  <Ionicons name="logo-apple" size={24} color="white" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.socialButton}>
+                  <Ionicons name="logo-facebook" size={24} color="#1877F2" />
+                </TouchableOpacity>
+              </View>
+
+              {/* Toggle Auth Mode */}
+              <TouchableOpacity
+                style={styles.toggleContainer}
+                onPress={toggleAuthMode}
+              >
+                <Text style={styles.toggleText}>
+                  {isLogin ? "Don't have an account? " : 'Already have an account? '}
+                  <Text style={styles.toggleLink}>
+                    {isLogin ? 'Sign Up' : 'Sign In'}
+                  </Text>
+                </Text>
+              </TouchableOpacity>
+            </Animated.View>
+
+            {/* Features */}
+            <View style={styles.featuresContainer}>
+              <View style={styles.featureItem}>
+                <Ionicons name="people" size={20} color="#8B5CF6" />
+                <Text style={styles.featureText}>Split expenses</Text>
+              </View>
+              <View style={styles.featureItem}>
+                <Ionicons name="sync" size={20} color="#8B5CF6" />
+                <Text style={styles.featureText}>Track debts</Text>
+              </View>
+              <View style={styles.featureItem}>
+                <Ionicons name="shield-checkmark" size={20} color="#8B5CF6" />
+                <Text style={styles.featureText}>Bank-level security</Text>
+              </View>
             </View>
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
-  gradient: {
+  container: {
     flex: 1,
-    // Remove any container view - gradient is the root
+  },
+  safeArea: {
+    flex: 1,
   },
   keyboardView: {
     flex: 1,
   },
-  scrollContent: {
-    flexGrow: 1,
+  content: {
+    flex: 1,
     paddingHorizontal: 24,
     justifyContent: 'center',
-    minHeight: SCREEN_HEIGHT,
   },
   logoContainer: {
     alignItems: 'center',
@@ -375,14 +347,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-    elevation: 8,
   },
   logoText: {
     fontSize: 32,
@@ -400,14 +364,6 @@ const styles = StyleSheet.create({
     padding: 24,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
   },
   title: {
     fontSize: 24,
@@ -431,7 +387,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: 12,
     paddingHorizontal: 16,
-    paddingVertical: Platform.OS === 'ios' ? 14 : 12,
+    paddingVertical: 14,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },
@@ -445,7 +401,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: 'white',
-    paddingVertical: Platform.OS === 'ios' ? 0 : 2,
   },
   errorText: {
     color: '#EF4444',
@@ -456,14 +411,6 @@ const styles = StyleSheet.create({
   authButton: {
     marginTop: 24,
     marginBottom: 24,
-    shadowColor: '#6366F1',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-    elevation: 8,
   },
   authButtonGradient: {
     flexDirection: 'row',
@@ -525,7 +472,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     marginTop: 40,
     paddingHorizontal: 20,
-    marginBottom: 20,
   },
   featureItem: {
     alignItems: 'center',
