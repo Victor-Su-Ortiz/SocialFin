@@ -110,20 +110,18 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
     setLoading(true);
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       if (onAuthSuccess) {
         onAuthSuccess({
           email,
           id: Math.random().toString(36).substr(2, 9),
         });
       }
-      
-      Alert.alert(
-        'Success',
-        isLogin ? 'Welcome back!' : 'Account created successfully!',
-        [{ text: 'OK' }]
-      );
+
+      Alert.alert('Success', isLogin ? 'Welcome back!' : 'Account created successfully!', [
+        { text: 'OK' },
+      ]);
     } catch (error) {
       Alert.alert('Error', 'Something went wrong. Please try again.');
     } finally {
@@ -154,11 +152,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
         />
         {placeholder.includes('Password') && (
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-            <Ionicons
-              name={showPassword ? 'eye-off' : 'eye'}
-              size={20}
-              color="#64748B"
-            />
+            <Ionicons name={showPassword ? 'eye-off' : 'eye'} size={20} color="#64748B" />
           </TouchableOpacity>
         )}
       </View>
@@ -167,10 +161,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
   );
 
   return (
-    <LinearGradient
-      colors={['#1E1B4B', '#312E81', '#1E1B4B']}
-      style={styles.container}
-    >
+    <LinearGradient colors={['#1E1B4B', '#312E81', '#1E1B4B']} style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -178,12 +169,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
         >
           <View style={styles.content}>
             {/* Logo Section */}
-            <Animated.View
-              style={[
-                styles.logoContainer,
-                { transform: [{ scale: pulseAnim }] },
-              ]}
-            >
+            <Animated.View style={[styles.logoContainer, { transform: [{ scale: pulseAnim }] }]}>
               <LinearGradient
                 colors={['#6366F1', '#8B5CF6', '#EC4899']}
                 style={styles.logoGradient}
@@ -204,9 +190,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
                 },
               ]}
             >
-              <Text style={styles.title}>
-                {isLogin ? 'Welcome Back' : 'Create Account'}
-              </Text>
+              <Text style={styles.title}>{isLogin ? 'Welcome Back' : 'Create Account'}</Text>
               <Text style={styles.subtitle}>
                 {isLogin
                   ? 'Track shared expenses with ease'
@@ -223,14 +207,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
                   errors.firstName
                 )}
 
-              {renderInput(
-                'Email',
-                email,
-                setEmail,
-                'mail',
-                false,
-                errors.email
-              )}
+              {renderInput('Email', email, setEmail, 'mail', false, errors.email)}
 
               {renderInput(
                 'Password',
@@ -242,11 +219,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
               )}
 
               {/* Auth Button */}
-              <TouchableOpacity
-                style={styles.authButton}
-                onPress={handleAuth}
-                disabled={loading}
-              >
+              <TouchableOpacity style={styles.authButton} onPress={handleAuth} disabled={loading}>
                 <LinearGradient
                   colors={['#6366F1', '#8B5CF6']}
                   style={styles.authButtonGradient}
@@ -286,15 +259,10 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
               </View>
 
               {/* Toggle Auth Mode */}
-              <TouchableOpacity
-                style={styles.toggleContainer}
-                onPress={toggleAuthMode}
-              >
+              <TouchableOpacity style={styles.toggleContainer} onPress={toggleAuthMode}>
                 <Text style={styles.toggleText}>
                   {isLogin ? "Don't have an account? " : 'Already have an account? '}
-                  <Text style={styles.toggleLink}>
-                    {isLogin ? 'Sign Up' : 'Sign In'}
-                  </Text>
+                  <Text style={styles.toggleLink}>{isLogin ? 'Sign Up' : 'Sign In'}</Text>
                 </Text>
               </TouchableOpacity>
             </Animated.View>
