@@ -21,12 +21,12 @@ class Settings(BaseSettings):
     debug: bool = False
 
     # Supabase - REQUIRED
-    supabase_url: Optional[str] = None
-    supabase_anon_key: Optional[str] = None
-    supabase_service_key: Optional[str] = None
+    supabase_url: str = "https://your-supabase-url.supabase.co"
+    supabase_anon_key: str = "your-anon-key"
+    supabase_service_key: str = "your-service-role-key"
 
     # JWT Settings - REQUIRED
-    jwt_secret_key: Optional[str] = None
+    jwt_secret_key: str = "your-secret-key"
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
     refresh_token_expire_days: int = 7

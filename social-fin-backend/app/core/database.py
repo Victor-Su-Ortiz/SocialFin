@@ -18,8 +18,6 @@ class SupabaseClient:
     def client(self) -> Client:
         """Get the regular Supabase client (with anon key)"""
         if not self._client:
-            if not settings.supabase_url or not settings.supabase_anon_key:
-                raise ValueError("Supabase URL and anon key are required.")
             self._client = create_client(
                 settings.supabase_url, settings.supabase_anon_key
             )
@@ -29,8 +27,6 @@ class SupabaseClient:
     def service_client(self) -> Client:
         """Get the service role Supabase client (for admin operations)"""
         if not self._service_client:
-            if not settings.supabase_url or not settings.supabase_service_key:
-                raise ValueError("Supabase URL and service key are required.")
             self._service_client = create_client(
                 settings.supabase_url,
                 settings.supabase_service_key,
@@ -42,8 +38,6 @@ class SupabaseClient:
 
     async def get_user_client(self, access_token: str) -> Client:
         """Get a Supabase client with user's access token"""
-        if not settings.supabase_url or not settings.supabase_anon_key:
-            raise ValueError("Supabase URL and anon key are required.")
         return create_client(
             settings.supabase_url,
             settings.supabase_anon_key,
