@@ -6,14 +6,14 @@ interface AvatarProps {
   name: string;
   avatarUrl?: string;
   size?: number;
-  gradientColors?: string[];
+  gradientColors?: readonly [string, string, ...string[]];
 }
 
 const Avatar: React.FC<AvatarProps> = ({
   name,
   avatarUrl,
   size = 40,
-  gradientColors = ['#ff00ff', '#00ccff'],
+  gradientColors = ['#ff00ff', '#00ccff'] as const,
 }) => {
   const initials = name
     .split(' ')

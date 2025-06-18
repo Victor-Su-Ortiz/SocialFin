@@ -2,6 +2,7 @@ import { ApiClient } from '@/src/api/config';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'expo-router';
 import {
   ActivityIndicator,
   Alert,
@@ -21,6 +22,7 @@ interface AuthScreenProps {
 }
 
 const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
+  const router = useRouter();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -138,6 +140,8 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
       Alert.alert('Success', isLogin ? 'Welcome back!' : 'Account created successfully!', [
         { text: 'OK' },
       ]);
+      // Navigate to main app
+      router.replace('/(tabs)');
     } catch (error) {
       console.error('Auth error:', error);
 
@@ -341,7 +345,7 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: 20,
   },
   logoGradient: {
     width: 80,
