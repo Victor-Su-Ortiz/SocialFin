@@ -57,6 +57,7 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks):
 
 @router.post("/login", response_model=Token)
 async def login(
+    # form_data: Optional[OAuth2PasswordRequestForm] = Depends(),
     json_data: Optional[UserLogin] = None,
 ):
     """
@@ -64,10 +65,12 @@ async def login(
     """
     # if form_data:
     #     # OAuth2 form data (username field contains email)
+    #     print("Logging in with form data:", form_data.username)
     #     email = form_data.username
     #     password = form_data.password
     if json_data:
         # JSON data
+        print("Logging in with JSON data:", json_data.email)
         email = json_data.email
         password = json_data.password
     else:
