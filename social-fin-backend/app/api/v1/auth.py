@@ -1,5 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    status,
+    BackgroundTasks,
+)
+
 from typing import Optional
 from app.schemas.auth import (
     Token,
@@ -14,6 +20,7 @@ from app.schemas.auth import (
 from app.services.auth import AuthService
 from app.dependencies import get_current_user
 from app.models.user import User
+from fastapi.responses import HTMLResponse
 from app.core.exceptions import (
     UserAlreadyExistsError,
     InvalidCredentialsError,
@@ -213,3 +220,102 @@ async def get_current_user_info(current_user: User = Depends(get_current_user)):
         created_at=current_user.created_at,
         updated_at=current_user.updated_at,
     )
+
+
+@router.get("/email-verified", response_class=HTMLResponse)
+async def email_verified_page():
+    """
+    Simple success page to show after email verification
+    Users are redirected here after Supabase verifies their email
+    """
+    html_content = """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Email Verified - SocialFin</title>
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0;
+                padding: 20px;
+            }
+            .card {
+                background: white;
+                padding: 3rem;
+                border-radius: 1rem;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+                text-align: center;
+                max-width: 400px;
+                width: 100%;
+            }
+            .checkmark {
+                width: 80px;
+                height: 80px;
+                margin: 0 auto 2rem;
+                background: #10b981;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                animation: scaleIn 0.3s ease-out;
+            }
+            .checkmark svg {
+                width: 40px;
+                height: 40px;
+                stroke: white;
+                stroke-width: 3;
+            }
+            h1 {
+                color: #1f2937;
+                font-size: 2rem;
+                margin: 0 0 1rem;
+            }
+            p {
+                color: #6b7280;
+                font-size: 1.1rem;
+                line-height: 1.6;
+                margin: 0 0 2rem;
+            }
+            .message {
+                background: #f3f4f6;
+                padding: 1rem;
+                border-radius: 0.5rem;
+                color: #4b5563;
+                font-size: 0.95rem;
+            }
+            @keyframes scaleIn {
+                from {
+                    transform: scale(0);
+                    opacity: 0;
+                }
+                to {
+                    transform: scale(1);
+                    opacity: 1;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <div class="checkmark">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            <h1>Email Verified!</h1>
+            <p>Your email has been successfully verified.</p>
+            <div class="message">
+                You can now close this window and log in to the SocialFin mobile app.
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    return HTMLResponse(content=html_content)
