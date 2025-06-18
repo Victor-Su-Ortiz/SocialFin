@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from fastapi.security import OAuth2PasswordRequestForm
+from typing import Optional
 from app.schemas.auth import (
     Token,
     TokenRefresh,
     UserCreate,
+    UserLogin,
     UserResponse,
     PasswordReset,
     PasswordChange,
@@ -35,6 +37,7 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks):
     - **phone**: Phone number (optional)
     """
     try:
+        print("Registering user:", user_data.email)
         tokens = await auth_service.register(user_data)
 
         # Send welcome email in background
@@ -53,14 +56,27 @@ async def register(user_data: UserCreate, background_tasks: BackgroundTasks):
 
 
 @router.post("/login", response_model=Token)
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+async def login(
+    json_data: Optional[UserLogin] = None,
+):
     """
-    Login with email and password
+    Login with email and password (supports both form and JSON)
+    """
+    # if form_data:
+    #     # OAuth2 form data (username field contains email)
+    #     email = form_data.username
+    #     password = form_data.password
+    if json_data:
+        # JSON data
+        email = json_data.email
+        password = json_data.password
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="No credentials provided"
+        )
 
-    OAuth2 compatible token endpoint. Use email as username.
-    """
     try:
-        tokens = await auth_service.login(form_data.username, form_data.password)
+        tokens = await auth_service.login(email, password)
         return tokens
     except InvalidCredentialsError:
         raise HTTPException(
@@ -68,11 +84,6 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         ) from InvalidCredentialsError
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Login failed. Please try again.",
-        ) from e
 
 
 @router.post("/refresh", response_model=Token)

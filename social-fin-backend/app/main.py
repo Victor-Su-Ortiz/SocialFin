@@ -46,6 +46,19 @@ app.add_middleware(RateLimitMiddleware)
 app.include_router(api_router, prefix="/api/v1")
 
 
+@app.get("/")
+async def root():
+    return {
+        "message": "Welcome to SocialFin API",
+        "version": settings.app_version,
+        "docs": "/api/docs",
+    }
+
+
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy", "version": settings.app_version}
+    return {
+        "status": "healthy",
+        "version": settings.app_version,
+        "environment": "production" if not settings.debug else "development",
+    }
