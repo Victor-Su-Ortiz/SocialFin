@@ -1,19 +1,20 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { ApiClient } from '@/src/api/config';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-  View,
+  ActivityIndicator,
+  Alert,
+  Animated,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
-  SafeAreaView,
-  KeyboardAvoidingView,
-  Platform,
-  Animated,
-  ActivityIndicator,
-  Alert,
+  View,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
 
 interface AuthScreenProps {
   onAuthSuccess?: (user: { email: string; id: string }) => void;
@@ -94,6 +95,16 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
       newErrors.password = 'Password is required';
     } else if (password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
+    } else if (!isLogin) {
+      // Additional password requirements for registration only
+      const hasUpperCase = /[A-Z]/.test(password);
+      const hasLowerCase = /[a-z]/.test(password);
+      const hasNumber = /[0-9]/.test(password);
+
+      if (!hasUpperCase || !hasLowerCase || !hasNumber) {
+        newErrors.password =
+          'Password must contain at least one uppercase letter, one lowercase letter, and one number';
+      }
     }
 
     if (!isLogin && !firstName.trim()) {
@@ -109,13 +120,18 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
 
     setLoading(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      let data;
+
+      if (isLogin) {
+        data = await ApiClient.login(email, password);
+      } else {
+        data = await ApiClient.register(email, password, firstName);
+      }
 
       if (onAuthSuccess) {
         onAuthSuccess({
-          email,
-          id: Math.random().toString(36).substr(2, 9),
+          email: data.user?.email || email,
+          id: data.user?.id,
         });
       }
 
@@ -123,7 +139,26 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
         { text: 'OK' },
       ]);
     } catch (error) {
-      Alert.alert('Error', 'Something went wrong. Please try again.');
+      console.error('Auth error:', error);
+
+      if (error instanceof TypeError && error.message === 'Network request failed') {
+        Alert.alert(
+          'Connection Error',
+          'Unable to connect to the server. Please check:\n\n' +
+            '• Server is running on port 8000\n' +
+            '• Using correct IP address for physical device\n' +
+            '• Network connection is active',
+          [{ text: 'OK' }]
+        );
+      } else if (error instanceof Error && error.message === 'Request timeout') {
+        Alert.alert('Timeout Error', 'The server took too long to respond. Please try again.', [
+          { text: 'OK' },
+        ]);
+      } else if (error instanceof Error) {
+        Alert.alert('Error', error.message || 'Something went wrong. Please try again.', [
+          { text: 'OK' },
+        ]);
+      }
     } finally {
       setLoading(false);
     }
